@@ -78,6 +78,7 @@ export const addComment = async (params: params, formData: FormData) => {
       }
 
       revalidateTag(`news-${postId}`);
+      delete (comment as any).userId;
       return comment;
    } catch (error) {
       console.error('Error adding comment:', error);
@@ -155,6 +156,7 @@ export const deleteComment = async (id: string) => {
 
       if (result.deletedCount > 0) {
          revalidateTag(`news-${comment.postId}`);
+         delete (comment as any).userId;
          return comment;
       }
 
