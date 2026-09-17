@@ -10,4 +10,4 @@ interface Opts {
  * ***It has to be called at the top level of the AuthProvider in order to work as expected***
  * @param page
  */
-export const getPageMetadata = async (page: string, opts: Opts) => {};
+export const getPageMetadata = async (_page: string, _opts: Opts) => {};

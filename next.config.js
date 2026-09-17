@@ -8,14 +8,14 @@ const nextConfig = {
    },
    // Server Actions are enabled by default in Next.js 14, so we don't need this anymore
    
-   // Disable TypeScript checking during build to help with deployment
+   // Enable strict TypeScript checking during build
    typescript: {
-      ignoreBuildErrors: true,
+      ignoreBuildErrors: false,
    },
    
-   // Disable ESLint during build
+   // Enable strict ESLint checking during build
    eslint: {
-      ignoreDuringBuilds: true,
+      ignoreDuringBuilds: false,
    },
 };
 

@@ -1,5 +1,3 @@
-import { useAuth } from '@/contexts/AuthProvider';
-import { sanityClient } from '@/sanity/sanity.client';
 import { NewsCategory } from '@/types/news';
 import { Center, SegmentedControl } from '@mantine/core';
 import React, { useEffect } from 'react';
@@ -11,43 +9,41 @@ interface Props {
    categories?: NewsCategory[];
 }
 
-const CategoryChanger = ({ value, onChange }: Props) => {
-   const [_value, setValue] = React.useState(value);
-   const [categories, setCategories] = React.useState<NewsCategory[]>([]);
-   const { user } = useAuth();
-   const isStaff = user?._type !== 'student';
+const CategoryChanger = ({ value, onChange, categories = [] }: Props) => {
+   const [_value, setValue] = React.useState(value || categories[0]?._id);
 
-   const handleChange = (value: string) => {
-      setValue(value);
-      const _val = categories.find((cat) => cat._id === value);
+   const handleChange = (selectedId: string) => {
+      setValue(selectedId);
+      const _val = categories.find((cat) => cat._id === selectedId);
       if (!_val) return;
       onChange(_val);
    };
 
-   const getCategories = async () => {
-      const data: NewsCategory[] = await sanityClient.fetch(`*[_type == "news-category"]`);
-      const _data = isStaff ? data.filter((d) => !d.classified) : data;
-      const ordered = _data.sort((a, b) => {
-         return (a.order ?? Infinity) - (b.order ?? Infinity);
-      });
-      //console.log('ordered', ordered);
-      setCategories(ordered);
-      setValue(value ?? ordered[0]._id);
-      const oldCat = _data.find((cat) => cat._id === value);
-      onChange(oldCat ?? ordered[0]);
-   };
-
    useEffect(() => {
-      getCategories();
+      if (categories.length === 0) return;
+
+      // If current value is valid in categories, ensure it's selected
+      const currentCat = categories.find((cat) => cat._id === value);
+      if (currentCat) {
+         setValue(currentCat._id);
+      } else {
+         // Default to the first category if current value is invalid or unset
+         setValue(categories[0]._id);
+         onChange(categories[0]);
+      }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, []);
+   }, [categories, value]);
+
+   if (categories.length === 0) {
+      return null;
+   }
 
    return (
       <SegmentedControl
          data={categories.map((cat) => ({
             value: cat._id,
             label: (
-               <Center title="classified">
+               <Center title={cat.name}>
                   <p>{cat.name}</p>
                </Center>
             ),

@@ -21,13 +21,13 @@ interface CommentProps {
 
 const MAX_DEPTH = 3; // Maximum nesting level for replies
 
-const Comment = ({ 
-   comment: initialComment, 
-   onReply, 
+const Comment = ({
+   comment: initialComment,
+   onReply,
    onDelete,
-   replies: initialReplies = [], 
-   depth = 0, 
-   isReply = false 
+   replies: initialReplies = [],
+   depth = 0,
+   isReply = false,
 }: CommentProps) => {
    const { user } = useAuth();
    const [comment] = useState(initialComment);
@@ -83,12 +83,12 @@ const Comment = ({
 
    const userId = comment.userId;
    const currentUserId = user?._id || (user as any)?.id;
-   const isOwner = comment.isOwner !== undefined ? comment.isOwner : (currentUserId && userId && (currentUserId === userId));
+   const isOwner = comment.isOwner !== undefined ? comment.isOwner : currentUserId && userId && currentUserId === userId;
    const canReply = depth < MAX_DEPTH;
 
    const handleReplySubmit = async () => {
       if (!replyText.trim() || !onReply) return;
-      
+
       setIsSubmitting(true);
       try {
          const success = await onReply(commentId, replyText);
@@ -106,21 +106,21 @@ const Comment = ({
          setIsSubmitting(false);
       }
    };
-   
+
    const handleDelete = async () => {
       if (!commentId) {
          setError('No comment ID available for deletion');
          return;
       }
-      
+
       setIsDeleting(true);
       setError('');
-      
+
       try {
          const result = await deleteComment(commentId);
          if (result) {
             setIsDeleted(true);
-         handleCloseConfirm();
+            handleCloseConfirm();
             if (onDelete) {
                onDelete(commentId);
             }
@@ -143,12 +143,12 @@ const Comment = ({
 
    const formatDate = (date: string | Date) => {
       const d = new Date(date);
-      return d.toLocaleDateString('en-US', { 
-         year: 'numeric', 
-         month: 'short', 
+      return d.toLocaleDateString('en-US', {
+         year: 'numeric',
+         month: 'short',
          day: 'numeric',
          hour: '2-digit',
-         minute: '2-digit'
+         minute: '2-digit',
       });
    };
 
@@ -156,21 +156,21 @@ const Comment = ({
       <>
          <div className={`flex flex-col gap-2 w-full ${isReply ? 'ml-8' : ''}`}>
             <div className="flex items-start gap-2 w-full group">
-            <Image
-               src={`https://ui-avatars.com/api/?name=${comment?.name ?? 'Anonymous'}`}
+               <Image
+                  src={`https://ui-avatars.com/api/?name=${comment?.name ?? 'Anonymous'}`}
                   width={32}
                   height={32}
-               alt={comment?.name ?? 'Anonymous'}
-               className="rounded-full border"
-            />
+                  alt={comment?.name ?? 'Anonymous'}
+                  className="rounded-full border"
+               />
                <div className="flex flex-col relative w-full">
                   <div className="flex flex-col gap-1">
                      <div className="flex items-center gap-2">
                         <span className="font-semibold text-sm">{comment.name ?? 'Anonymous'}</span>
                         <span className="text-xs text-gray-500 dark:text-gray-400">{formatDate(comment.createdAt)}</span>
                      </div>
-               <p className="text-sm">{comment.body}</p>
-                     
+                     <p className="text-sm">{comment.body}</p>
+
                      <div className="flex items-center gap-4 mt-1 text-xs text-gray-500">
                         {/* Like button */}
                         <button
@@ -185,7 +185,7 @@ const Comment = ({
                         </button>
                         {/* Reply button - only show if not at max depth */}
                         {canReply && (
-                           <button 
+                           <button
                               onClick={() => setShowReplyForm(!showReplyForm)}
                               className="text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors flex items-center gap-1"
                            >
@@ -193,19 +193,19 @@ const Comment = ({
                            </button>
                         )}
                         {/* Delete button - only show for comment owner */}
-               {isOwner && (
-                  <ActionButton
-                     onClick={handleOpenConfirm}
-                     color="red"
-                     variant="transparent"
+                        {isOwner && (
+                           <ActionButton
+                              onClick={handleOpenConfirm}
+                              color="red"
+                              variant="transparent"
                               className="opacity-0 group-hover:opacity-100 transition-opacity absolute top-0 right-0"
-                  >
-                              <BiTrash 
-                                 size={16} 
-                                 className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors" 
+                           >
+                              <BiTrash
+                                 size={16}
+                                 className="text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
                               />
-                  </ActionButton>
-               )}
+                           </ActionButton>
+                        )}
                      </div>
                   </div>
                </div>
@@ -272,34 +272,24 @@ const Comment = ({
                </div>
             )}
          </div>
-         
+
          {/* Delete confirmation modal */}
-         <Modal 
-            opened={confirmOpen} 
-            onClose={handleCloseConfirm}
-            title="Delete Comment"
-            centered
-            size="sm"
-         >
+         <Modal opened={confirmOpen} onClose={handleCloseConfirm} title="Delete Comment" centered size="sm">
             <Text size="sm" mb={15}>
                Are you sure you want to delete this comment? This action cannot be undone.
             </Text>
-            
+
             {error && (
                <Text color="red" size="sm" mb={15}>
                   {error}
                </Text>
             )}
-            
+
             <Group position="right" mt="md">
                <Button variant="outline" onClick={handleCloseConfirm} disabled={isDeleting}>
                   Cancel
                </Button>
-               <Button 
-                  className='bg-red-600'
-                  onClick={handleDelete} 
-                  loading={isDeleting}
-               >
+               <Button className="bg-red-600" onClick={handleDelete} loading={isDeleting}>
                   {isDeleting ? 'Deleting...' : 'Delete'}
                </Button>
             </Group>

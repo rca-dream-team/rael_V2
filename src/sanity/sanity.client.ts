@@ -34,7 +34,7 @@ export function urlFor(source: any) {
          auto: () => ({ format: () => ({ url: () => 'https://via.placeholder.com/150' }) }),
       } as any;
    }
-   
+
    try {
       return builder.image(source);
    } catch (error) {
@@ -51,7 +51,7 @@ export function urlFor(source: any) {
 
 export const getImageUrl = (source: any) => {
    if (!source) return null;
-   
+
    try {
       return builder.image(source).url();
    } catch (error) {

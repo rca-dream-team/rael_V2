@@ -34,14 +34,6 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
                >
                   LOGIN
                </Link>
-               {/* <Link
-                  href="/auth/signup"
-                  className={` z-10 px-11 text- py-5 ${
-                     isLogin ? 'rounded-tr-[3em] text-white bg-black' : 'rounded-l-[3em] text-black bg-white'
-                  } `}
-               >
-                  SIGNUP
-               </Link> */}
                <div
                   className={`px-11 z-10 border-none border-black border-0 py-5 bg-black ${
                      !isLogin ? 'rounded-tr-[3em]' : ''

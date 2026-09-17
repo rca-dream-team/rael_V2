@@ -55,7 +55,7 @@ export default function LoginIndex() {
       router.push((redirect as any) ?? '/');
    };
    return (
-      <form onSubmit={handleSubmit} className={' flex-col w-full flex items-center gap-y-8 font-poppins '}>
+      <form onSubmit={handleSubmit} className={' flex-col w-full flex items-center gap-y-6 font-poppins '}>
          <button
             type="submit"
             onClick={loginWithRCA}
@@ -64,6 +64,9 @@ export default function LoginIndex() {
          >
             {loading ? <LuLoader2 className=" animate-spin" /> : <p className="z-50 relative">Login With MIS</p>}
          </button>
+         <p className="text-xs text-gray-500 text-center max-w-[280px]">
+            Sign in with your RCA MIS credentials. Accounts are synced automatically.
+         </p>
       </form>
    );
 }

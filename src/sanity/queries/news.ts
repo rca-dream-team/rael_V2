@@ -10,15 +10,16 @@ const newsFields = `
     content,
     "author": author->{name, image},
     "image": image.asset->url,
-    "category": category->{name,_id}
+    "category": category->{name, _id, classified}
 `;
 // exclude drafts
-export const fetchNewsCategories = sanityClient.fetch(`*[_type == "news-category" && !(_id in path("drafts.**"))]`);
+export const fetchNewsCategories = () =>
+   sanityClient.fetch(`*[_type == "news-category" && !(_id in path("drafts.**"))] | order(order asc)`);
 
 export const fetchNewsQuery = groq`*[_type == "news" && !(_id in path("drafts.**"))] | order(date desc) {
     ${newsFields}
 }`;
-export const fetchNews = sanityClient.fetch(fetchNewsQuery);
+export const fetchNews = () => sanityClient.fetch(fetchNewsQuery);
 
 export const fetchLatestNewsQuery = groq`*[_type == "news" && !(_id in path("drafts.**"))] | order(date desc) {
     ${newsFields}

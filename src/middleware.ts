@@ -1,16 +1,18 @@
 import type { NextRequest } from 'next/server';
 import { NextResponse } from 'next/server';
 
-export const authRoutes = ['/auth/login', '/auth/signup', '/auth/logout'];
+export const authRoutes = ['/auth/login', '/auth/logout'];
 export const otherWhitelisted = ['/members', '/studio', '/article', '/gallery'];
-// unmatched routes to allow meta data to be generated, auth handled in the client (AuthProvider)
-const unMatched = 'members|studio|article|gallery';
 export const whitelist = [...authRoutes, ...otherWhitelisted];
 
 export function middleware(request: NextRequest) {
    const token = request.cookies.get('rael_token');
    const path = request.nextUrl.pathname;
    const isStudio = path.startsWith('/studio');
+
+   if (path.startsWith('/auth/signup')) {
+      return NextResponse.redirect(new URL('/auth/login', request.nextUrl));
+   }
 
    if (
       whitelist.some((whitePath) => {

@@ -4,13 +4,7 @@ import { useEffect } from 'react';
 import { BiErrorCircle } from 'react-icons/bi';
 import Link from 'next/link';
 
-export default function Error({
-   error,
-   reset,
-}: {
-   error: Error & { digest?: string };
-   reset: () => void;
-}) {
+export default function Error({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
    useEffect(() => {
       // Log the error to an error reporting service
       console.error('Application error:', error);
@@ -24,13 +18,9 @@ export default function Error({
             <p className="mb-6 text-gray-600 dark:text-gray-300">
                We&apos;re having trouble loading this page. Our team has been notified about this issue.
             </p>
-            
-            {error.digest && (
-               <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                  Error reference: {error.digest}
-               </p>
-            )}
-            
+
+            {error.digest && <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">Error reference: {error.digest}</p>}
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
                <button
                   onClick={() => reset()}
@@ -38,7 +28,7 @@ export default function Error({
                >
                   Try again
                </button>
-               <Link 
+               <Link
                   href="/"
                   className="px-6 py-2 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                >

@@ -6,7 +6,7 @@ import { sanityClient } from '../sanity.client';
 
 interface Props {
    schemaType: SchemaType;
-   renderDefault: (props: any) => React.JSX.Element;
+   renderDefault: (_props: any) => React.JSX.Element;
 }
 
 export const AsyncListInput = (props: Props) => {

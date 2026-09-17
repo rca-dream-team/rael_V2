@@ -22,9 +22,7 @@ const IndexPage = ({ news, comments = [] }: Props) => {
    const { user } = useAuth();
    const ref = useRef<HTMLFormElement>(null);
    const [localComments, setLocalComments] = useState<IComment[]>(comments);
-   const [displayedComments, setDisplayedComments] = useState<IComment[]>(
-      (comments || []).slice(0, COMMENTS_PER_PAGE)
-   );
+   const [displayedComments, setDisplayedComments] = useState<IComment[]>((comments || []).slice(0, COMMENTS_PER_PAGE));
    const [page, setPage] = useState(1);
    const [showDatabaseError, setShowDatabaseError] = useState(false);
 
@@ -35,7 +33,7 @@ const IndexPage = ({ news, comments = [] }: Props) => {
 
    const loadMoreComments = () => {
       const nextPage = page + 1;
-      const start = (page) * COMMENTS_PER_PAGE;
+      const start = page * COMMENTS_PER_PAGE;
       const end = start + COMMENTS_PER_PAGE;
       const newComments = localComments.slice(0, end);
       setDisplayedComments(newComments);
@@ -43,14 +41,14 @@ const IndexPage = ({ news, comments = [] }: Props) => {
    };
 
    const updateCommentInTree = (comments: any[], updatedComment: any): any[] => {
-      return comments.map(comment => {
+      return comments.map((comment) => {
          if (comment._id === updatedComment._id) {
             return { ...comment, ...updatedComment };
          }
          if (comment.replies && comment.replies.length > 0) {
             return {
                ...comment,
-               replies: updateCommentInTree(comment.replies, updatedComment)
+               replies: updateCommentInTree(comment.replies, updatedComment),
             };
          }
          return comment;
@@ -58,18 +56,18 @@ const IndexPage = ({ news, comments = [] }: Props) => {
    };
 
    const addReplyToComment = (comments: IComment[], parentId: string, reply: IComment): IComment[] => {
-      return comments.map(comment => {
+      return comments.map((comment) => {
          if (comment._id === parentId) {
             return {
                ...comment,
                replyCount: (comment.replyCount || 0) + 1,
-               replies: [...(comment.replies || []), reply]
+               replies: [...(comment.replies || []), reply],
             };
          }
          if (comment.replies && comment.replies.length > 0) {
             return {
                ...comment,
-               replies: addReplyToComment(comment.replies, parentId, reply)
+               replies: addReplyToComment(comment.replies, parentId, reply),
             };
          }
          return comment;
@@ -77,7 +75,7 @@ const IndexPage = ({ news, comments = [] }: Props) => {
    };
 
    const removeCommentFromTree = (comments: IComment[], commentId: string): IComment[] => {
-      return comments.filter(comment => {
+      return comments.filter((comment) => {
          if (comment._id === commentId) {
             return false;
          }
@@ -94,33 +92,30 @@ const IndexPage = ({ news, comments = [] }: Props) => {
       if (!user) return;
 
       try {
-         const result = await addComment(
-            { postId: news._id, userId: user.id },
-            formData
-         );
+         const result = await addComment({ postId: news._id, userId: user.id }, formData);
 
-          if (result) {
-             // Add the new root comment directly to the front of the list
-             const newComment: IComment = {
-                ...result,
-                body: result.body || '',
-                likesCount: 0,
-                likedByUser: false,
-                isOwner: true,
-                replies: []
-             };
-             const updatedComments = [newComment, ...localComments];
-             setLocalComments(updatedComments);
-             setDisplayedComments(updatedComments.slice(0, page * COMMENTS_PER_PAGE));
-             ref.current?.reset();
-             setShowDatabaseError(false);
-          } else {
-             setShowDatabaseError(true);
-          }
-       } catch (error) {
-          console.error('Error adding comment:', error);
-          setShowDatabaseError(true);
-       }
+         if (result) {
+            // Add the new root comment directly to the front of the list
+            const newComment: IComment = {
+               ...result,
+               body: result.body || '',
+               likesCount: 0,
+               likedByUser: false,
+               isOwner: true,
+               replies: [],
+            };
+            const updatedComments = [newComment, ...localComments];
+            setLocalComments(updatedComments);
+            setDisplayedComments(updatedComments.slice(0, page * COMMENTS_PER_PAGE));
+            ref.current?.reset();
+            setShowDatabaseError(false);
+         } else {
+            setShowDatabaseError(true);
+         }
+      } catch (error) {
+         console.error('Error adding comment:', error);
+         setShowDatabaseError(true);
+      }
    };
 
    const handleReply = async (parentId: string, body: string) => {
@@ -131,10 +126,7 @@ const IndexPage = ({ news, comments = [] }: Props) => {
       formData.append('parentId', parentId);
 
       try {
-         const result = await addComment(
-            { postId: news._id, userId: user.id },
-            formData
-         );
+         const result = await addComment({ postId: news._id, userId: user.id }, formData);
 
          if (result) {
             // Update the comments state with the new reply
@@ -144,7 +136,7 @@ const IndexPage = ({ news, comments = [] }: Props) => {
                likesCount: 0,
                likedByUser: false,
                isOwner: true,
-               replies: []
+               replies: [],
             };
             const updatedComments = addReplyToComment(localComments, parentId, newReply);
             setLocalComments(updatedComments);
@@ -179,9 +171,9 @@ const IndexPage = ({ news, comments = [] }: Props) => {
    return (
       <div
          className="w-full flex top-0 flex-col items-center min-hfull flex-1 bg-opacity-10 relative"
-         style={{ 
-            background: backgroundImageUrl ? `url(${backgroundImageUrl})` : '#f0f0f0', 
-            backgroundSize: 'cover' 
+         style={{
+            background: backgroundImageUrl ? `url(${backgroundImageUrl})` : '#f0f0f0',
+            backgroundSize: 'cover',
          }}
       >
          <div className="absolute top-0 left-0 w-full h-full dark:bg-black/90 bg-white/95 z-0"></div>
@@ -208,19 +200,19 @@ const IndexPage = ({ news, comments = [] }: Props) => {
                {news.commentQuestion && <span className="mt-2">{news.commentQuestion}</span>}
                {user ? (
                   <form action={handleSubmit} ref={ref}>
-                  <textarea
-                     name="body"
-                     id="body"
-                     className="w-full h-20 p-2 border bg-transparent border-gray-300 rounded-lg"
-                     placeholder={news.commentQuestion ?? 'What&apos;s your take on this news 🤔? Leave a comment'}
-                  ></textarea>
-                  {showDatabaseError && (
-                     <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
-                        <p>Unable to connect to the database. Please try again later.</p>
-                     </div>
-                  )}
-                  <SubmitButton className="mr-auto">Add Comment</SubmitButton>
-               </form>
+                     <textarea
+                        name="body"
+                        id="body"
+                        className="w-full h-20 p-2 border bg-transparent border-gray-300 rounded-lg"
+                        placeholder={news.commentQuestion ?? 'What&apos;s your take on this news 🤔? Leave a comment'}
+                     ></textarea>
+                     {showDatabaseError && (
+                        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                           <p>Unable to connect to the database. Please try again later.</p>
+                        </div>
+                     )}
+                     <SubmitButton className="mr-auto">Add Comment</SubmitButton>
+                  </form>
                ) : (
                   <p className="text-gray-600">Please log in to comment.</p>
                )}
@@ -242,9 +234,7 @@ const IndexPage = ({ news, comments = [] }: Props) => {
                         className="group relative px-8 py-2.5 font-medium text-sm bg-[#1a1a1a] dark:bg-gray-800 text-white rounded-lg hover:bg-black dark:hover:bg-gray-700 transition-all duration-200 ease-in-out flex items-center gap-2 border border-gray-700/30"
                      >
                         Load More Comments
-                        <span className="text-gray-400 ml-1">
-                           ({localComments.length - displayedComments.length} remaining)
-                        </span>
+                        <span className="text-gray-400 ml-1">({localComments.length - displayedComments.length} remaining)</span>
                      </button>
                   </div>
                )}

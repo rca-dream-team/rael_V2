@@ -9,35 +9,33 @@ import { useEffect, useState } from 'react';
 import CategoryChanger from '../ui/CategoryChanger';
 import NewsList from './news/NewsList';
 import NewsTile from './news/NewsTile';
-import { fetchNews } from '@/sanity/queries/news';
-
 interface RcaDailyPageProps {
    news: News[];
    categories: NewsCategory[];
 }
 
-const RcaDailyPage = ({ categories }: RcaDailyPageProps) => {
+const RcaDailyPage = ({ categories = [], news: initialNews = [] }: RcaDailyPageProps) => {
    const [layout, setLayout] = useLocalStorage<'grid' | 'list' | 'tile'>({
       key: 'layout',
       defaultValue: 'grid',
    });
    const [category, setCategory] = useLocalStorage<string>({
       key: 'category',
+      defaultValue: categories[0]?._id,
    });
-   const [news, setNews] = useState<News[]>([]);
-   const [newsFiltered, setNewsFiltered] = useState<News[]>(news);
+   const [news, setNews] = useState<News[]>(initialNews);
+   const [newsFiltered, setNewsFiltered] = useState<News[]>(() => {
+      const activeCat = category || categories[0]?._id;
+      if (!activeCat) return initialNews;
+      const filtered = initialNews.filter((item) => item?.category?._id === activeCat);
+      return filtered.length > 0 ? filtered : initialNews;
+   });
 
    useEffect(() => {
-      const getNews = async () => {
-         const news = await fetchNews;
-         setNews(news);
-      };
-      //console.log('I will infinitely repeat');
-      getNews();
-   }, []);
+      setNews(initialNews);
+   }, [initialNews]);
 
    const handleLayoutChange = (layout: 'grid' | 'list' | 'tile') => {
-      //console.log(layout);
       setLayout(layout);
    };
 
@@ -46,16 +44,14 @@ const RcaDailyPage = ({ categories }: RcaDailyPageProps) => {
    };
 
    useEffect(() => {
-      //console.log('category', category);
-
-      let newsFiltered: News[] = news.filter((news) => news?.category._id === category);
-      //console.log('newsFiltered', newsFiltered);
-      // if (!isStaff) newsFiltered = news.filter((news) => (news?.category as string) == category);
-      // else newsFiltered = news.filter((news) => (news?.category as string) == 'unclassified');
-      //console.log(newsFiltered);
-      setNewsFiltered(newsFiltered);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-   }, [category, news]);
+      const activeCat = category || categories[0]?._id;
+      if (!activeCat) {
+         setNewsFiltered(news);
+         return;
+      }
+      const filtered = news.filter((item) => item?.category?._id === activeCat);
+      setNewsFiltered(filtered);
+   }, [category, categories, news]);
 
    //console.log('news', news);
 

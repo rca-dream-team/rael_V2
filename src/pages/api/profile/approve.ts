@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
    if (req.method === 'PUT') {
       try {
          //console.log('Approve Webhook', req.body);
-         const { _id, email, isApproved } = req.body;
+         const { email, isApproved } = req.body;
          if (!isApproved) {
             //console.log(`${_id} isApproved`, isApproved);
             return res.json({ message: 'Enter all required parameters' });

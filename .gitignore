@@ -42,3 +42,6 @@ dist
 
 # maintainer documentation
 MAINTAINER_GUIDE.md
+
+# temporary fixes
+fix/
