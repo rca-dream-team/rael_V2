@@ -231,7 +231,11 @@ export async function likeComment(commentId: string, userId: string) {
       if (existing) return null;
       const result = await db.collection('comment_likes').insertOne({ commentId, userId, createdAt: new Date() });
       return result;
-   } catch (error) {
+   } catch (error: any) {
+      // Code 11000: Duplicate key error (race condition caught by unique index)
+      if (error?.code === 11000) {
+         return null; // Already liked
+      }
       console.error('Error liking comment:', error);
       return null;
    }

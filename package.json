@@ -10,7 +10,8 @@
       "format": "prettier --write ./src",
       "format:fix": "prettier --write './src/**/*.{ts,tsx}'",
       "deploy": "next build && next export && touch out/.nojekyll && gh-pages -d out",
-      "deploy-sanity": "sanity deploy"
+      "deploy-sanity": "sanity deploy",
+      "db:indexes": "node scripts/init-indexes.js"
    },
    "dependencies": {
       "@faker-js/faker": "^8.4.1",
